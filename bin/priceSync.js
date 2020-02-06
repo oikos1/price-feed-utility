@@ -2,10 +2,11 @@ const request = require('request-promise');
 const colors = require('colors');
 const lib = require('../lib/common');
 
-const pricefeed_Address  = 'TWnchaKo5LzZyn5GdyjaUp45UnwNzQuQDk';
-const medianizer_Address = 'TSQQS98i7MUoNsVcMCx2uDDMUeC2PTpNrs';
-const perFeed_Address    = 'TAxQvGo8Czb23yvM3ky193uFoCNDrN3Af9';
+const pricefeed_Address  = lib.addresses.GEM_pricefeed;
+const medianizer_Address = lib.addresses.GEM_medianizer;
+const perFeed_Address    = lib.addresses.PER_feed;
 
+/*
 const _perFeed = {
     "perFeed": {
     "address":  lib.tronWeb.address.toHex(perFeed_Address),
@@ -13,18 +14,11 @@ const _perFeed = {
 };
 
 const perFeed = lib.tronWeb.contract(_perFeed["perFeed"].abi, perFeed_Address);
-
-// update with your private key here
-const privateKey = '31ca7245cd48254df2d08eb9ac28cb0e941e5f9145586193655b17f51a9d6f26';
-const _address = 'TEsk263pdTwFgXEC2oqCuVoxwTgGVhqrDJ'
-
+*/
 
 let startBlock = 0;
 let lastPrice = 0;
 
-const loadContract = async address => {
-    return await lib.tronWeb.contract().at(address);
-}
 
 const getTickerPrice = () => {
 
@@ -48,15 +42,16 @@ const getTickerPrice = () => {
 
 const sync = async () => {
 
-    const Pricefeed = !!pricefeed_Address ? await loadContract(pricefeed_Address) : console.log("error with pricefeed"); //await deployContract('PriceFeed');
-    const Medianizer = !!medianizer_Address ? await loadContract(medianizer_Address) : console.log("error with medianizer"); //await deployContract('Medianizer');
-    const PerFeed = !!perFeed_Address ? await loadContract(perFeed_Address) : console.log("error with perfeed}");
+    const Pricefeed = !!pricefeed_Address ? await lib.u.loadContract(pricefeed_Address) : console.log("error with pricefeed"); //await deployContract('PriceFeed');
+    const Medianizer = !!medianizer_Address ? await lib.u.loadContract(medianizer_Address) : console.log("error with medianizer"); //await deployContract('Medianizer');
+    const PerFeed = !!perFeed_Address ? await lib.u.loadContract(perFeed_Address) : console.log("error with perfeed");
 
     let currentBlock = await lib.tronWeb.trx.getCurrentBlock();
 
     console.log("startBlock", startBlock, "currentBlock", currentBlock.block_header.raw_data.number, "lastPrice", lastPrice);
 
     //if (currentBlock.block_header.raw_data.number > startBlock) {
+
         /*Pricefeed.post( web3.utils.toWei("0.0132555"), "1591994899", tronWeb.address.toHex(medianizer_Address)).send({
                 shouldPollResponse: true,
                 callValue: 0, 
@@ -64,23 +59,17 @@ const sync = async () => {
             }).then().catch(function (err) {
                 console.log(err)
         });*/
-        PerFeed.per().send({
-                shouldPollResponse: false,
-                callValue: 0, 
-                from : _address
-            }).catch(function (err) {
-                console.log(err)
+
+        PerFeed.per().send(lib.opts).catch(function (err) {
+            console.log(err)
         });
 
         getTickerPrice().then(function(result) {
             if (lastPrice != JSON.parse(result).data.quotes.USD.price) {
                 console.log("price has changed, was", lastPrice, "now", JSON.parse(result).data.quotes.USD.price);
                 lastPrice = JSON.parse(result).data.quotes.USD.price;
-                Pricefeed.post(lib.web3.utils.toWei((JSON.parse(result).data.quotes.USD.price).toString()), "1591994899", lib.tronWeb.address.toHex(medianizer_Address)).send({
-                    shouldPollResponse: true,
-                    callValue: 0,
-                    from: _address
-                }).then().catch(function(err) {
+                Pricefeed.post(lib.web3.utils.toWei((JSON.parse(result).data.quotes.USD.price).toString()), "1591994899", lib.tronWeb.address.toHex(medianizer_Address)).send(lib.opts)
+                .then().catch(function(err) {
                     console.log(err)
                 });
             }

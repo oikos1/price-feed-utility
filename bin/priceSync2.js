@@ -2,29 +2,17 @@ const request = require('request-promise');
 const colors = require('colors');
 const lib = require('../lib/common');
 
-
-const pricefeed_Address = 'TURuge3Rp7q1c7hdwixKZ1YK2UFMzagYzQ';
-//const pricefeed2_Address = 'TUn7PiUC7Q9ioqmm1JtryY85YfQMD73S7C';
-const medianizer_Address = 'TK6hdLFASTxZzP5Urg5a48PEPiwpDvP934';
-//const medianizer2_Address = 'TT1eaWFig1sJ43c94uhHqndvWcGgroy8Pz'; 
-
-// update with your private key here
-const privateKey = '31ca7245cd48254df2d08eb9ac28cb0e941e5f9145586193655b17f51a9d6f26';
-const _address = 'TEsk263pdTwFgXEC2oqCuVoxwTgGVhqrDJ'
-
+const pricefeed_Address  = lib.addresses.GOV_pricefeed;
+const medianizer_Address = lib.addresses.GOV_medianizer;
 
 let startBlock = 0;
 let lastPrice = 0;
 
-const loadContract = async address => {
-    return await lib.tronWeb.contract().at(address);
-}
 
 const getTickerPrice = () => {
 
     return request("https://api.coinmarketcap.com/v2/ticker/1958/", function(err, response, body) {
         if (err) return;
-
         // Parse price data in API response
         const json = JSON.parse(body);
         const data = json.data;
@@ -35,19 +23,17 @@ const getTickerPrice = () => {
         const perChange1H = data.quotes.USD.percent_change_1h;
         const perChange1D = data.quotes.USD.percent_change_24h;
         const perChange7D = data.quotes.USD.percent_change_7d;
-
-
         //console.log(price.toString() + " - " + rank.toString() + " - " + marketCap.toString() + " - " +
-        //    vol24H.toString() + " - " + perChange1H.toString() + " - " + perChange1D.toString() + " - " + perChange7D.toString());
-
+        //    vol24H.toString() + " - " + perChange1H.toString() + " - " + perChange1D.toString() + " - " + perChange7D.toString())
     });
 
 }
 
+
 const sync = async () => {
 
-    const Pricefeed = !!pricefeed_Address ? await loadContract(pricefeed_Address) : console.log("error with pricefeed"); //await deployContract('PriceFeed');
-    const Medianizer = !!medianizer_Address ? await loadContract(medianizer_Address) : console.log("error with medianizer"); //await deployContract('Medianizer');
+    const Pricefeed = !!pricefeed_Address ? await lib.u.loadContract(pricefeed_Address) : console.log("error with pricefeed"); //await deployContract('PriceFeed');
+    const Medianizer = !!medianizer_Address ? await lib.u.loadContract(medianizer_Address) : console.log("error with medianizer"); //await deployContract('Medianizer');
 
     let currentBlock = await lib.tronWeb.trx.getCurrentBlock();
 
@@ -66,11 +52,9 @@ const sync = async () => {
             if (lastPrice != JSON.parse(result).data.quotes.USD.price*33333) {
                 console.log("price has changed, was", lastPrice, "now", (JSON.parse(result).data.quotes.USD.price*33333));
                 lastPrice = JSON.parse(result).data.quotes.USD.price* 33333;
-                Pricefeed.post(lib.web3.utils.toWei(((JSON.parse(result).data.quotes.USD.price)*33333).toString()), "1591994899", lib.tronWeb.address.toHex(medianizer_Address)).send({
-                    shouldPollResponse: true,
-                    callValue: 0,
-                    from: _address
-                }).then().catch(function(err) {
+                Pricefeed.post(lib.web3.utils.toWei(((JSON.parse(result).data.quotes.USD.price)*33333).toString()), "1591994899", lib.tronWeb.address.toHex(medianizer_Address))
+                .send(lib.opts)
+                .then().catch(function(err) {
                     console.log(err)
                 });
             }

@@ -1,0 +1,12 @@
+{
+  "mainnet": {
+    "GEM_pricefeed" : "TKf633vvXqa7P9m1izvW4WSzbi2JGP4Ajk",
+    "GOV_pricefeed" : "TTfJDzieN5nBLSSLQHPPWETeckt2PykJDe",
+    "GEM_medianizer": "TUxPnshiKm79wn2dTAiYpSUgo3svg7DPNV",
+    "GOV_medianizer": "TNEQziwuYv8Pa868zypUML5aYoh8pdq4k4",    
+    "PER_feed"      : "TK9wXnD9x1xnzUsM5FQY5iXhhPrXQMCE9N"
+  },
+  "credentials": {
+    "privateKey" : "3f2cdb5f5d5c8618b1aeb6b32ca4f32c9254c01150161962898eab4c089bc554"
+  }
+}

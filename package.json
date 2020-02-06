@@ -15,27 +15,12 @@
     "bignumber.js": "^6.0.0",
     "dotenv": "^5.0.0",
     "ejs": "^2.5.7",
-    "express": "^4.16.2",
-    "express-rate-limit": "^2.11.0",
-    "helmet": "^3.14.0",
-    "pg-promise": "^7.4.1",
-    "postgraphile": "^4.0.0-alpha2.33",
-    "postgraphile-plugin-connection-filter": "^1.0.0-alpha.9",
-    "ramda": "^0.25.0",
     "request-promise": "^4.2.5",
     "trongrid": "^1.2.4",
     "web3": "1.0.0-beta.33"
   },
   "scripts": {
-    "priceSync": "babel-node bin/priceSync.js",
-    "priceSync2": "babel-node bin/priceSync2.js",
-    "sync": "babel-node bin/sync.js",
-    "sync100": "babel-node bin/sync100.js",
-    "subscribe": "babel-node bin/subscribe.js",
-    "graphql": "babel-node graphql/server.js",
-    "clean": "rm -rf dist && mkdir dist",
-    "build": "babel -d dist/ graphql/",
-    "serve": "node dist/server.js",
-    "postinstall": "npm run build"
+    "sync-gem": "babel-node bin/priceSync.js",
+    "sync-gov": "babel-node bin/priceSync2.js"
   }
 }

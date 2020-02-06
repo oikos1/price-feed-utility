@@ -1,9 +1,0 @@
-#!/usr/bin/env bash
-
-source .env
-
-PGPASSWORD=$PGPASSWORD psql --set=sslmode=require \
-  -h "localhost" \
-  -d "pg-graphql" \
-  -U "postgres" \
-  -p 5432
